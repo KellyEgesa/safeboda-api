@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets   = ["linux-musl","linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Driver {
+  id          Int     @id @default(autoincrement())
+  name        String
+  phoneNumber String  @unique
+  suspended   Boolean @default(false)
+  Ride        Ride[]
+}
+
+model Passenger {
+  id          Int    @id @default(autoincrement())
+  name        String
+  phoneNumber String @unique
+  Ride        Ride[]
+}
+
+model Ride {
+  id          Int       @id @default(autoincrement())
+  passengerId Int
+  driverId    Int
+  completed   Boolean   @default(false)
+  pickUpPoint String
+  destPoint   String
+  passenger   Passenger @relation(fields: [passengerId], references: [id])
+  driver      Driver    @relation(fields: [driverId], references: [id])
+}
